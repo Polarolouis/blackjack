@@ -1,0 +1,16 @@
+Idée principale : Partie de Black Jack
+
+- 1 joueur, 1/2 IA joueuses et 1 IA croupier
+- Plusieurs niveaux d'IA: 
+  > Simple : Connaissance des règles, joue en tentant de minimiser les pertes
+  > Érudit : Comptage de carte selon la technique Hi-Low (+1 pour les têtes, AS et 10 / 0 pour 7,8,9 / -1 pour 2,3,4,5,6)
+  > Rainman : Connaissance de toutes les cartes sorties depuis le dernier mélange -> calculs les probabilités de sorties de chaque cartes
+  
+  ** Idées **
+  - Ajout d'un niveau de Greediness ?
+  - Simulation de très nombreuses parties en faisant varier les niveaux d'IA pour déterminer les stratégies les plus intéressantes selon le niveaux des autres joueurs
+  
+  
+  Cahier des charges : 
+  - Coder le jeu et ses règles 
+	- Mélange des cartes

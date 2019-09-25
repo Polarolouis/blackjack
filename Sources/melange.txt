@@ -1,0 +1,5 @@
+- Saisie du nbre de paquet 
+On a n * 52 cartes, 52 types différents
+Boucle pour de 1 à (n*52) + 1 :
+	On initialise différents compteurs : chacun allant de 1 à n
+	On tire au hasard une carte, on vérifie si son compteur est différent de n si oui on l'ajoute au paquet sinon on recommence (boucle while)
