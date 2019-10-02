@@ -1,0 +1,2 @@
+2 * distribuer 1 carte (une face cachée pour le croupier) -> distrib joueur & distrib croupier
+	- Dictionnaire "joueurs" : Index "Croupier" : 
