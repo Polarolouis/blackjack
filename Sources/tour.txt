@@ -1,2 +1,2 @@
-2 * distribuer 1 carte (une face cachée pour le croupier) -> distrib joueur & distrib croupier
-	- Dictionnaire "joueurs" : Index "Croupier" : 
+2 * distribuer 1 carte (une face cachée pour le croupier) -> distrib (vérifier si on pourra distrib à tout le monde, terminer la partie sinon)
+	- Dictionnaire "joueurs" : {Nbre de joueurs * Index "Joueur" : Liste cartes du joueur}
