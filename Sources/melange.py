@@ -20,3 +20,15 @@ def melange(n):
                 P[i] = conv[r]
                 dic[conv[r]] -= 1   # dic[conv[r]] = dic[conv[r]] -1 (on diminue de 1 la valeur de l'index de la carte tirée (une carte de moins est disponible)
     return P
+
+
+
+
+
+
+
+
+
+
+
+
