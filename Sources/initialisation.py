@@ -14,5 +14,5 @@ def initialisation(n): # Création de la liste des joueurs, et le dictionnaire d
             LJ.append("Joueur "+str(i))
     J = {}
     for i in LJ:
-        J[i] = []
+        J[i] = [0, stratAlea(), []]  # [mise, stratégie, main]
     return LJ,J
