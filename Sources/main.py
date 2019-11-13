@@ -45,6 +45,23 @@ def distrib(LJ,J,P,n):  # LJ : Liste du nom index des joueurs | J : dictionnaire
                 J[i][2].append(P.pop()) # On ajoute une carte dans la liste de carte du joueur i
 
 
+def valeurMain(main):
+    S = 0
+    count = 0
+    for i in main:
+        if i[0] == 'K' or i[0] == 'Q' or i[0] == 'J' or i[0] == '1':
+            S += 10
+        elif i[0] == 'A':
+            S += 11
+            count += 1
+        else:
+            S += i[0]
+    while S > 21 and count > 0:
+        S -= 10
+        count -= 1
+    return S
+
+
 # Stratégies
 def stratAlea(phase, mise):
     # avec phase qui correspond à la phase de jeu
@@ -85,20 +102,3 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         phase = 2
         for i in listeJoueurs:
             mise, cartePioche = infoJoueurs[i][1](phase, infoJoueurs[i][0])
-
-
-def valeurMain(main):
-    S = 0
-    count = 0
-    for i in main:
-        if i[0] == 'K' or i[0] == 'Q' or i[0] == 'J' or i[0] == '1':
-            S += 10
-        elif i[0] == 'A':
-            S += 11
-            count += 1
-        else:
-            S += i[0]
-    while S > 21 and count > 0:
-        S -= 10
-        count -= 1
-    return S
