@@ -65,7 +65,7 @@ def stratAlea(phase, mise):
         elif choix == 3:  # Stand
             return (0, 0)
 
-def main(nbreJoueurs, nbrePCartes, strat):
+def principale(nbreJoueurs, nbrePCartes, strat):
     listeJoueurs,infoJoueurs = initialisation(nbreJoueurs)
     P = melange(nbrePCartes)
     while testJouable(listeJoueurs, infoJoueurs, P):
@@ -85,3 +85,15 @@ def main(nbreJoueurs, nbrePCartes, strat):
         phase = 2
         for i in listeJoueurs:
             mise, cartePioche = infoJoueurs[i][1](phase, infoJoueurs[i][0])
+
+def valeurmain(main):
+    s=0
+    count=0
+    for i in main:
+        if i[0]=='K' or i[0]=='Q' or i[0]=='J' or i[0]=='1':
+            s+=10
+        elif i[0]=='A':
+            s+=11
+            count+=1
+        else:
+            s+= i[0]
