@@ -86,14 +86,19 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         for i in listeJoueurs:
             mise, cartePioche = infoJoueurs[i][1](phase, infoJoueurs[i][0])
 
-def valeurmain(main):
-    s=0
-    count=0
+
+def valeurMain(main):
+    S = 0
+    count = 0
     for i in main:
-        if i[0]=='K' or i[0]=='Q' or i[0]=='J' or i[0]=='1':
-            s+=10
-        elif i[0]=='A':
-            s+=11
-            count+=1
+        if i[0] == 'K' or i[0] == 'Q' or i[0] == 'J' or i[0] == '1':
+            S += 10
+        elif i[0] == 'A':
+            S += 11
+            count += 1
         else:
-            s+= i[0]
+            S += i[0]
+    while S > 21 and count > 0:
+        S -= 10
+        count -= 1
+    return S
