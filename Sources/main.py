@@ -63,24 +63,31 @@ def valeurMain(main):
 
 
 # Stratégies
-def stratAlea(phase, mise):
+def stratAlea(phase, listeDesInfosDuJoueur):
     # avec phase qui correspond à la phase de jeu
     """ mise entre 2 et 100 euros aléatoirement
     Soit il tire | soit il double
     Si il tire, il a une chance sur deux d'arrêter de tirer """
+    miseSupp = 0
+    nbreCartesSupp = 0
     if phase == 1:  # Mise de départ
         return (randint(2, 100), 0)  # La fonction renvoie (la mise, le nombre de cartes en plus)
-    elif phase == 2:  # Doubler ou hit (peut re hit ou stand) ou stand
+    elif phase == 2 :  # Doubler ou hit (peut re hit ou stand) ou stand
         choix = randint(1, 3)
         if choix == 1:  # Double
-            return (mise, 1)
+            nbreCartesSupp = 1
+            miseSupp = listeDesInfosDuJoueur[0]
+            return (miseSupp, nbreCartesSupp)
         elif choix == 2:  # Hit
-            #nbreCartes = 1
-            #while randint(1, 2) == 1:
-            #   nbreCartes += 1
-            return (0, nbreCartes)
+            rejouer = True
+            while listeDesInfosDuJoueur[3] < 21 and rejouer:
+                if randint(1, 2) == 1:
+                    rejouer = True
+                    nbreCartesSupp += 1
+
+            return (miseSupp, nbreCartesSupp)
         elif choix == 3:  # Stand
-            return (0, 0)
+            return (miseSupp, nbreCartesSupp)
 
 def principale(nbreJoueurs, nbrePCartes, strat):
     listeJoueurs,infoJoueurs = initialisation(nbreJoueurs)
@@ -101,4 +108,4 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         """ Deuxième phase de mise """
         phase = 2
         for i in listeJoueurs:
-            mise, cartePioche = infoJoueurs[i][1](phase, infoJoueurs[i][0])
+            mise, cartePioche = infoJoueurs[i][1](phase, infoJoueurs[i])
