@@ -16,7 +16,7 @@ def initialisation(n): # Création de la liste des joueurs, et le dictionnaire d
             LJ.append("Joueur "+str(i))
     J = {}
     for i in LJ:
-        J[i] = [0, stratAlea(), [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
+        J[i] = [0, stratAlea, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
     return LJ,J
 
 #Mélange
@@ -45,6 +45,10 @@ def distrib(LJ,J,P,n):  # LJ : Liste du nom index des joueurs | J : dictionnaire
                 J[i][2].append(P.pop()) # On ajoute une carte dans la liste de carte du joueur i
 
 
+def tirerUneCarte(P):
+    return P.pop()
+
+
 def valeurMain(main):
     S = 0
     count = 0
@@ -55,7 +59,7 @@ def valeurMain(main):
             S += 11
             count += 1
         else:
-            S += i[0]
+            S += int(i[0])
     while S > 21 and count > 0:
         S -= 10
         count -= 1
@@ -63,31 +67,47 @@ def valeurMain(main):
 
 
 # Stratégies
-def stratAlea(phase, listeDesInfosDuJoueur):
+def stratAlea(phase, infosJoueurs, P):
     # avec phase qui correspond à la phase de jeu
     """ mise entre 2 et 100 euros aléatoirement
     Soit il tire | soit il double
     Si il tire, il a une chance sur deux d'arrêter de tirer """
-    miseSupp = 0
-    nbreCartesSupp = 0
-    if phase == 1:  # Mise de départ
-        return (randint(2, 100), 0)  # La fonction renvoie (la mise, le nombre de cartes en plus)
-    elif phase == 2 :  # Doubler ou hit (peut re hit ou stand) ou stand
-        choix = randint(1, 3)
-        if choix == 1:  # Double
-            nbreCartesSupp = 1
-            miseSupp = listeDesInfosDuJoueur[0]
-            return (miseSupp, nbreCartesSupp)
-        elif choix == 2:  # Hit
-            rejouer = True
-            while listeDesInfosDuJoueur[3] < 21 and rejouer:
-                if randint(1, 2) == 1:
-                    rejouer = True
-                    nbreCartesSupp += 1
+    # On récupère les valeurs
+    capital = infosJoueurs[4]
+    mise = infosJoueurs[0]
+    main = infosJoueurs[2]
 
-            return (miseSupp, nbreCartesSupp)
-        elif choix == 3:  # Stand
-            return (miseSupp, nbreCartesSupp)
+    if phase == 1:  # Mise de départ
+        mise = randint(2, capital)
+        capital -= mise
+    elif phase == 2:
+        if capital >= mise:
+            choix = randint(1, 3)
+            if choix == 1:  # Double
+                main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+                capital -= mise
+                mise = 2*mise
+            elif choix == 2: # Hit
+                rejouer = True
+                while valeurMain(main) < 21 and rejouer:
+                    if randint(1, 2) == 1:
+                        rejouer = True
+                    main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+
+        else: # On ne peut pas doubler
+            choix = randint(2, 3)
+            if choix == 2: # Hit
+                    rejouer = True
+                    while valeurMain(main) < 21 and rejouer:
+                        if randint(1, 2) == 1:
+                            rejouer = True
+                        main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+
+    # On attribue les nouvelles valeurs
+    infosJoueurs[2] = main
+    infosJoueurs[0] = mise
+    infosJoueurs[4] = capital
+    infosJoueurs[3] = valeurMain(main)
 
 def principale(nbreJoueurs, nbrePCartes, strat):
     listeJoueurs,infoJoueurs = initialisation(nbreJoueurs)
@@ -97,15 +117,21 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         """ Première phase de mise """
         phase = 1
         for i in listeJoueurs:
-            mise, cartePioche = infoJoueurs[i][1](phase, infoJoueurs[i][0])
-            infoJoueurs[i][0] += mise
+            strat = infoJoueurs[i][1]
+            strat(phase, infoJoueurs[i], P)
 
         """ Distribution des mains """
         distrib(listeJoueurs, infoJoueurs, P, 2)
-        vmain = valeurMain(infoJoueurs[i][3])
-        infoJoueurs[i][4] = vmain
+
 
         """ Deuxième phase de mise """
         phase = 2
         for i in listeJoueurs:
-            mise, cartePioche = infoJoueurs[i][1](phase, infoJoueurs[i])
+            strat = infoJoueurs[i][1]
+            strat(phase, infoJoueurs[i], P)
+
+        # test
+        for i in listeJoueurs:
+            print(str(i) + " " + str(infoJoueurs[i]))
+
+        break
