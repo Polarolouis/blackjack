@@ -5,8 +5,9 @@ Created on Wed Sep 25 14:59:25 2019
 @authors: Julien Morelle & Louis Lacoste
 """
 from random import randint
+from numpy import floor
 
-# Initialisation
+# Initialisation, Endphase et Banqueroute
 def initialisation(n): # Création de la liste des joueurs, et le dictionnaire de leurs caractéristiques
     LJ=[]
     for i in range(n+1):
@@ -18,6 +19,51 @@ def initialisation(n): # Création de la liste des joueurs, et le dictionnaire d
     for i in LJ:
         J[i] = [0, stratAlea, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
     return LJ,J
+
+
+def endphase(LJ, J):
+    vmain_croupier = J["Croupier"][3]
+    for i in LJ:
+        #print(" End Phase : "+str(LJ))
+        infosJoueurs = J[i]
+        # On récupère les valeurs
+        capital = infosJoueurs[4]
+        mise = infosJoueurs[0]
+        main = infosJoueurs[2]
+        vmain = infosJoueurs[3]
+
+        if i == "Croupier":
+            capital = 10000
+        else:
+            if vmain == 21 and len(main) == 2:
+                print("BLACKJACK !!!")
+                capital += floor(2.5 * mise)
+            elif vmain > vmain_croupier:
+                capital += floor(2 * mise)
+            elif vmain == vmain_croupier:
+                capital += mise
+
+        # On vide main et mise
+        main = []
+        mise = 0
+
+        # On set toutes les valeurs modifiées
+        infosJoueurs[4] = capital
+        infosJoueurs[0] = mise
+        infosJoueurs[2] = main
+        infosJoueurs[3] = vmain
+
+
+def bankruptTest(LJ, J):
+    for i in LJ:
+        infosJoueurs = J[i]
+        # On récupère les valeurs
+        capital = infosJoueurs[4]
+        if capital < 2:  # Si on a moins de 2 jetons alors on ne mise plus
+            del J[i]  # On retire le joueur de la partie
+            indexARetirer = LJ.index(i)
+            del LJ[indexARetirer]  # On retire le nom du joueur de la partie
+
 
 #Mélange
 def melange(n):
@@ -36,8 +82,12 @@ def melange(n):
 
 # Distribution
 def testJouable(LJ, J, P):
-    if len(P) > 52:  # verif qu'on peut jouer
+    if len(P) > 52 and len(LJ) >= 2:  # verif qu'on peut jouer
+        print("On peut jouer")
         return True
+    else:
+        print("ON NE PEUT PAS JOUER")
+        return False
 
 def distrib(LJ,J,P,n):  # LJ : Liste du nom index des joueurs | J : dictionnaire avec en index les { noms index des joueurs : [Main du joueur] }
         for c in range(n):
@@ -110,13 +160,16 @@ def stratAlea(phase, infosJoueurs, P):
     infosJoueurs[3] = valeurMain(main)
 
 def principale(nbreJoueurs, nbrePCartes, strat):
-    listeJoueurs,infoJoueurs = initialisation(nbreJoueurs)
+    tour = 0
+    listeJoueurs, infoJoueurs = initialisation(nbreJoueurs)
     P = melange(nbrePCartes)
     while testJouable(listeJoueurs, infoJoueurs, P):
-
+        tour += 1
+        phase = 0
         """ Première phase de mise """
         phase = 1
         for i in listeJoueurs:
+            #print("Phase " + str(phase) + " joueur : "+str(i))
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P)
 
@@ -127,11 +180,13 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         """ Deuxième phase de mise """
         phase = 2
         for i in listeJoueurs:
+            #print("Phase " + str(phase) + " joueur : "+str(i))
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P)
+        endphase(listeJoueurs, infoJoueurs)
+        bankruptTest(listeJoueurs, infoJoueurs)
 
-        # test
+        # Affichage
+        print("Tour "+str(tour))
         for i in listeJoueurs:
             print(str(i) + " " + str(infoJoueurs[i]))
-
-        break
