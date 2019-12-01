@@ -34,14 +34,13 @@ def endphase(LJ, J):
 
         if i == "Croupier":
             capital = 200
-        else:
+        elif vmain <= 21:
             if vmain == 21 and len(main) == 2:
                 print("BLACKJACK !!!")
                 capital += int(round(2.5 * mise))
             elif vmain > vmain_croupier:
-                C'EST CON !!!!!!!!!!!!
                 capital += int(round(2 * mise))
-                print(i + ")
+                print(i + "a battu le croupier")
             elif vmain == vmain_croupier:
                 capital += mise
                 print(i + "a fait exaequo avec le croupier")
@@ -70,6 +69,15 @@ def testBanqueroute(LJ, J):
                 del J[i]  # On retire le joueur de la partie
                 print(LJ[LJ.index(i)] + " ne peut plus jouer, il quitte la table !")
                 del LJ[LJ.index(i)]  # On retire le nom du joueur de la partie
+
+
+def bankruptTest2(nom, J, LJ):
+    print("On teste si le joueur " + nom + " fait banqueroute")
+    if J[nom][4] <= 2:
+        # Le joueur ne peut plus jouer, il faut le retirer des listes
+        del J[nom]  # On supprime ses données
+        print(LJ[LJ.index(nom)] + " ne peut plus jouer, il quitte la table !")
+        LJ.remove(nom)  # On le retire de la liste des joueurs
 
 
 #Mélange
@@ -135,7 +143,7 @@ def stratAlea(phase, infosJoueurs, P):
     main = infosJoueurs[2]
 
     if phase == 1:  # Mise de départ
-        mise = randint(2, capital+1)
+        mise = randint(2, capital)
         capital -= mise
     elif phase == 2:
         if capital >= mise:
@@ -183,7 +191,6 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         """ Distribution des mains """
         distrib(listeJoueurs, infoJoueurs, P, 2)
 
-
         """ Deuxième phase de mise """
         phase = 2
         for i in listeJoueurs:
@@ -191,12 +198,12 @@ def principale(nbreJoueurs, nbrePCartes, strat):
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P)
         print("Tour "+str(tour))
+        print(str(listeJoueurs))
         for i in listeJoueurs:
-            print(str(i) + " " + str(infoJoueurs[i]))
+            print(" - " + str(i) + " " + str(infoJoueurs[i]))
         endphase(listeJoueurs, infoJoueurs)
-        testBanqueroute(listeJoueurs, infoJoueurs)
-
-        # Affichage
-        print("Fin du Tour "+str(tour))
+        #testBanqueroute(listeJoueurs, infoJoueurs)
+        print("Liste des joueurs avant la banqueroute : " + str(listeJoueurs))
         for i in listeJoueurs:
-            print(str(i) + " " + str(infoJoueurs[i]))
+            bankruptTest2(i, infoJoueurs, listeJoueurs)
+        print("Liste des joueurs après la banqueroute : " +str(listeJoueurs))

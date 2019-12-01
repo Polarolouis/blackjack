@@ -17,6 +17,8 @@ def bankruptTest(LJ, J):
             del LJ[indexARetirer]  # On retire le nom du joueur de la partie
 
 
-def bankruptTestSimple(capital):
-    if capital <= 2:  # Si on a moins de 2 jetons alors on ne mise plus
-        print("Le joueur ne peut plus jouer, il quitte la table !")
+def bankruptTest2(nom, J, LJ):
+    if J[nom][4] <= 2:
+        # Le joueur ne peut plus jouer, il faut le retirer des listes
+        del J[nom]  # On supprime ses données
+        del LJ[LJ.index(nom)]  # On le retire de la liste des joueurs
