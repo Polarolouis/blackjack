@@ -33,36 +33,43 @@ def endphase(LJ, J):
         vmain = infosJoueurs[3]
 
         if i == "Croupier":
-            capital = 10000
+            capital = 200
         else:
             if vmain == 21 and len(main) == 2:
                 print("BLACKJACK !!!")
-                capital += floor(2.5 * mise)
+                capital += int(round(2.5 * mise))
             elif vmain > vmain_croupier:
-                capital += floor(2 * mise)
+                C'EST CON !!!!!!!!!!!!
+                capital += int(round(2 * mise))
+                print(i + ")
             elif vmain == vmain_croupier:
                 capital += mise
+                print(i + "a fait exaequo avec le croupier")
 
         # On vide main et mise
         main = []
         mise = 0
+        vmain = valeurMain(main)
 
         # On set toutes les valeurs modifiées
-        infosJoueurs[4] = capital
+        infosJoueurs[4] = int(floor(round(capital)))
         infosJoueurs[0] = mise
         infosJoueurs[2] = main
         infosJoueurs[3] = vmain
 
 
-def bankruptTest(LJ, J):
+def testBanqueroute(LJ, J):
+    print("Voici la liste des Joueurs : " +str(LJ))
     for i in LJ:
-        infosJoueurs = J[i]
-        # On récupère les valeurs
-        capital = infosJoueurs[4]
-        if capital < 2:  # Si on a moins de 2 jetons alors on ne mise plus
-            del J[i]  # On retire le joueur de la partie
-            indexARetirer = LJ.index(i)
-            del LJ[indexARetirer]  # On retire le nom du joueur de la partie
+        if i != "Croupier":
+            print("On teste si le joueur " + i + " fait banqueroute")
+            infosJoueurs = J[i]
+            # On récupère les valeurs
+            capital = infosJoueurs[4]
+            if capital <= 2:  # Si on a moins de 2 jetons alors on ne mise plus
+                del J[i]  # On retire le joueur de la partie
+                print(LJ[LJ.index(i)] + " ne peut plus jouer, il quitte la table !")
+                del LJ[LJ.index(i)]  # On retire le nom du joueur de la partie
 
 
 #Mélange
@@ -128,7 +135,7 @@ def stratAlea(phase, infosJoueurs, P):
     main = infosJoueurs[2]
 
     if phase == 1:  # Mise de départ
-        mise = randint(2, capital)
+        mise = randint(2, capital+1)
         capital -= mise
     elif phase == 2:
         if capital >= mise:
@@ -183,10 +190,13 @@ def principale(nbreJoueurs, nbrePCartes, strat):
             #print("Phase " + str(phase) + " joueur : "+str(i))
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P)
+        print("Tour "+str(tour))
+        for i in listeJoueurs:
+            print(str(i) + " " + str(infoJoueurs[i]))
         endphase(listeJoueurs, infoJoueurs)
-        bankruptTest(listeJoueurs, infoJoueurs)
+        testBanqueroute(listeJoueurs, infoJoueurs)
 
         # Affichage
-        print("Tour "+str(tour))
+        print("Fin du Tour "+str(tour))
         for i in listeJoueurs:
             print(str(i) + " " + str(infoJoueurs[i]))
