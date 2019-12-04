@@ -34,16 +34,19 @@ def endphase(LJ, J):
 
         if i == "Croupier":
             capital = 200
-        elif vmain <= 21:
+        else:
             if vmain == 21 and len(main) == 2:
-                print("BLACKJACK !!!")
                 capital += int(round(2.5 * mise))
-            elif vmain > vmain_croupier:
-                capital += int(round(2 * mise))
-                print(i + "a battu le croupier")
-            elif vmain == vmain_croupier:
-                capital += mise
-                print(i + "a fait exaequo avec le croupier")
+            elif vmain_croupier > 21:
+                if vmain <= 21:
+                    capital += 2*mise
+                else:
+                    capital += mise
+            elif vmain_croupier <= 21:
+                if vmain_croupier==vmain:
+                    capital += mise
+                else:
+                    capital+= 2*mise
 
         # On vide main et mise
         main = []
@@ -55,7 +58,6 @@ def endphase(LJ, J):
         infosJoueurs[0] = mise
         infosJoueurs[2] = main
         infosJoueurs[3] = vmain
-
 
 def testBanqueroute(LJ, J):
     print("Voici la liste des Joueurs : " +str(LJ))
@@ -72,11 +74,9 @@ def testBanqueroute(LJ, J):
 
 
 def bankruptTest2(nom, J, LJ):
-    print("On teste si le joueur " + nom + " fait banqueroute")
-    if J[nom][4] <= 2:
+    if J[nom][4] == 2 or J[nom][4] == 1 or J[nom][4] == 0:
         # Le joueur ne peut plus jouer, il faut le retirer des listes
         del J[nom]  # On supprime ses données
-        print(LJ[LJ.index(nom)] + " ne peut plus jouer, il quitte la table !")
         LJ.remove(nom)  # On le retire de la liste des joueurs
 
 
@@ -98,10 +98,8 @@ def melange(n):
 # Distribution
 def testJouable(LJ, J, P):
     if len(P) > 52 and len(LJ) >= 2:  # verif qu'on peut jouer
-        print("On peut jouer")
         return True
     else:
-        print("ON NE PEUT PAS JOUER")
         return False
 
 def distrib(LJ,J,P,n):  # LJ : Liste du nom index des joueurs | J : dictionnaire avec en index les { noms index des joueurs : [Main du joueur] }
@@ -180,11 +178,12 @@ def principale(nbreJoueurs, nbrePCartes, strat):
     P = melange(nbrePCartes)
     while testJouable(listeJoueurs, infoJoueurs, P):
         tour += 1
+        for i in listeJoueurs:
+            bankruptTest2(i, infoJoueurs, listeJoueurs)
         phase = 0
         """ Première phase de mise """
         phase = 1
         for i in listeJoueurs:
-            #print("Phase " + str(phase) + " joueur : "+str(i))
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P)
 
@@ -194,16 +193,19 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         """ Deuxième phase de mise """
         phase = 2
         for i in listeJoueurs:
-            #print("Phase " + str(phase) + " joueur : "+str(i))
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P)
-        print("Tour "+str(tour))
-        print(str(listeJoueurs))
-        for i in listeJoueurs:
-            print(" - " + str(i) + " " + str(infoJoueurs[i]))
         endphase(listeJoueurs, infoJoueurs)
-        #testBanqueroute(listeJoueurs, infoJoueurs)
-        print("Liste des joueurs avant la banqueroute : " + str(listeJoueurs))
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
-        print("Liste des joueurs après la banqueroute : " +str(listeJoueurs))
+
+
+def test(N):
+    n=0
+    for i in range(1,N+1):
+        print("Essai n°" + str(i))
+        try:
+            principale(5,10,stratAlea)
+        except:
+            n+=1
+    return str(n/N) + " % d'erreurs"
