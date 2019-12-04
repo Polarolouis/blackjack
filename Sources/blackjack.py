@@ -208,4 +208,4 @@ def test(N):
             principale(5,10,stratAlea)
         except:
             n+=1
-    return str(n/N) + " % d'erreurs"
+    return str(n/N*100) + " % d'erreurs"
