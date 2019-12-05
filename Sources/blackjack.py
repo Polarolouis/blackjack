@@ -178,8 +178,6 @@ def principale(nbreJoueurs, nbrePCartes, strat):
     P = melange(nbrePCartes)
     while testJouable(listeJoueurs, infoJoueurs, P):
         tour += 1
-        for i in listeJoueurs:
-            bankruptTest2(i, infoJoueurs, listeJoueurs)
         phase = 0
         """ Première phase de mise """
         phase = 1
@@ -198,12 +196,15 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         endphase(listeJoueurs, infoJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
+        for i in listeJoueurs:
+            bankruptTest2(i, infoJoueurs, listeJoueurs)
 
 
 def test(N):
     n=0
     for i in range(1,N+1):
-        print("Essai n°" + str(i))
+        if i % 100 == 0:
+            print("Essai n°" + str(i))
         try:
             principale(5,10,stratAlea)
         except:
