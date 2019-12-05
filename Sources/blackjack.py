@@ -203,10 +203,10 @@ def principale(nbreJoueurs, nbrePCartes, strat):
 def test(N):
     n=0
     for i in range(1,N+1):
-        if i % 100 == 0:
+        if i % 1000 == 0:
             print("Essai n°" + str(i))
         try:
-            principale(5,10,stratAlea)
+            principale(2,10,stratAlea)
         except:
             n+=1
     return str(n/N*100) + " % d'erreurs"
