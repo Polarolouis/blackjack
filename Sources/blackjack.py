@@ -130,7 +130,7 @@ def valeurMain(main):
 
 
 # Stratégies
-def stratAlea(phase, infosJoueurs, P):
+def stratAlea(phase, infosJoueurs, P, valUpCard):
     # avec phase qui correspond à la phase de jeu
     """ mise entre 2 et 100 euros aléatoirement
     Soit il tire | soit il double
@@ -176,6 +176,7 @@ def principale(nbreJoueurs, nbrePCartes, strat):
     tour = 0
     listeJoueurs, infoJoueurs = initialisation(nbreJoueurs)
     P = melange(nbrePCartes)
+    upCardCroupier = []
     while testJouable(listeJoueurs, infoJoueurs, P):
         tour += 1
         phase = 0
@@ -183,22 +184,23 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         phase = 1
         for i in listeJoueurs:
             strat = infoJoueurs[i][1]
-            strat(phase, infoJoueurs[i], P)
+            strat(phase, infoJoueurs[i], P, 0)
 
         """ Distribution des mains """
         distrib(listeJoueurs, infoJoueurs, P, 2)
-
+        upCardCroupier.append(infoJoueurs["Croupier"][2][1])
+        valUpCard = valeurMain(upCardCroupier)
         """ Deuxième phase de mise """
         phase = 2
         for i in listeJoueurs:
             strat = infoJoueurs[i][1]
-            strat(phase, infoJoueurs[i], P)
+            strat(phase, infoJoueurs[i], P, valUpCard)
         endphase(listeJoueurs, infoJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
-
+        upCardCroupier = []
 
 def test(N):
     n=0
