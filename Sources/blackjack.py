@@ -36,7 +36,7 @@ def endphase(LJ, J):
             capital = 200
         else:
             if vmain == 21 and len(main) == 2:
-                capital += int(round(2.5 * mise))
+                capital += int(3 * mise)
             elif vmain_croupier > 21:
                 if vmain <= 21:
                     capital += 2*mise
@@ -45,7 +45,7 @@ def endphase(LJ, J):
             elif vmain_croupier <= 21:
                 if vmain_croupier==vmain:
                     capital += mise
-                else:
+                elif (vmain<vmain_croupier and vmain<=21):
                     capital+= 2*mise
 
         # On vide main et mise
@@ -54,7 +54,7 @@ def endphase(LJ, J):
         vmain = valeurMain(main)
 
         # On set toutes les valeurs modifiées
-        infosJoueurs[4] = int(floor(round(capital)))
+        infosJoueurs[4] = capital
         infosJoueurs[0] = mise
         infosJoueurs[2] = main
         infosJoueurs[3] = vmain
@@ -234,6 +234,8 @@ def principale(nbreJoueurs, nbrePCartes, strat):
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
         upCardCroupier = []
+    return tour
+
 
 def test(N):
     n=0
@@ -241,7 +243,7 @@ def test(N):
         if i % 1000 == 0:
             print("Essai n°" + str(i))
         try:
-            principale(2,10,stratAlea)
+            principale(2,10,stratbasique)
         except:
             n+=1
     return str(n/N*100) + " % d'erreurs"
