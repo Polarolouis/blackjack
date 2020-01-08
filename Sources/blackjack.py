@@ -181,7 +181,7 @@ def stratbasique(phase, infosJoueurs, P, valUpCard):
     main = infosJoueurs[2]
 
     if phase == 1:  # Mise de départ
-        mise = randint(2, capital)
+        mise = capital//20
         capital -= mise
     elif phase == 2:
         jouer = True
@@ -247,3 +247,23 @@ def test(N):
         except:
             n+=1
     return str(n/N*100) + " % d'erreurs"
+
+
+def test2(N):
+    s=0
+    for i in range(N):
+        s+=principale(1, 100, stratbasique)
+    s=s/N
+    return s
+
+
+def test3(N):
+    s=0
+    for i in range(N):
+        s+=principale(1, 100, stratAlea)
+    s=s/N
+    return s
+
+
+def testc(N):
+    return (test2(N),test3(N))
