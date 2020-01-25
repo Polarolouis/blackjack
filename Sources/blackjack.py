@@ -21,11 +21,11 @@ def initialisation(n, strat): # Création de la liste des joueurs, et le diction
         if i == n:
             LJ.append("Croupier")
         else:
-            LJ.append("Joueur "+str(i))
+            LJ.append("Joueur "+str(i+1))
     J = {}
     for i in LJ:
         if i == 'Croupier':
-            J[i] = [0, stratCroupier, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]    
+            J[i] = [0, stratBasique, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
         else:
             J[i] = [0, strat, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
     return LJ,J
@@ -69,22 +69,9 @@ def endphase(LJ, J):
         infosJoueurs[2] = main
         infosJoueurs[3] = vmain
 
-def testBanqueroute(LJ, J):
-    print("Voici la liste des Joueurs : " +str(LJ))
-    for i in LJ:
-        if i != "Croupier":
-            print("On teste si le joueur " + i + " fait banqueroute")
-            infosJoueurs = J[i]
-            # On récupère les valeurs
-            capital = infosJoueurs[4]
-            if capital <= 2:  # Si on a moins de 2 jetons alors on ne mise plus
-                del J[i]  # On retire le joueur de la partie
-                print(LJ[LJ.index(i)] + " ne peut plus jouer, il quitte la table !")
-                del LJ[LJ.index(i)]  # On retire le nom du joueur de la partie
-
 
 def bankruptTest2(nom, J, LJ):
-    if J[nom][4] == 2 or J[nom][4] == 1 or J[nom][4] == 0:
+    if J[nom][4] <= 2:
         # Le joueur ne peut plus jouer, il faut le retirer des listes
         del J[nom]  # On supprime ses données
         LJ.remove(nom)  # On le retire de la liste des joueurs
@@ -113,13 +100,22 @@ def testJouable(LJ, J, P):
         return False
 
 def distrib(LJ,J,P,n):  # LJ : Liste du nom index des joueurs | J : dictionnaire avec en index les { noms index des joueurs : [Main du joueur] }
-        for c in range(n):
-            for i in LJ:
-                J[i][2].append(P.pop()) # On ajoute une carte dans la liste de carte du joueur i
+    global listeComplete
+    for i in LJ:
+        if i != "Croupier":
+            for c in range(n):
+                    J[i][2].append(tirerUneCarte(P)) # On ajoute une carte dans la liste de carte du joueur i
+        else:
+            for c in range(n-1):
+                J[i][2].append(tirerUneCarte(P)) # On ajoute une carte dans la liste de carte du croupier
+
 
 
 def tirerUneCarte(P):
-    return P.pop()
+    carte = P.pop()
+    global listeComplete
+    listeComplete.append(carte)
+    return carte
 
 
 def valeurMain(main):
@@ -191,7 +187,7 @@ def stratBasique(phase, infosJoueurs, P, valUpCard):
     main = infosJoueurs[2]
 
     if phase == 1:  # Mise de départ
-        mise = capital//20
+        mise = 20 # Pour éviter que le joueur puisse ne plus miser
         capital -= mise
     elif phase == 2:
         jouer = True
@@ -220,6 +216,8 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie):
     listeJoueurs, infoJoueurs = initialisation(nbreJoueurs, stratChoisie)
     P = melange(nbrePCartes)
     upCardCroupier = []
+    global listeComplete
+    listeComplete = []
     while testJouable(listeJoueurs, infoJoueurs, P):
         tour += 1
         phase = 0
@@ -231,7 +229,7 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie):
 
         """ Distribution des mains """
         distrib(listeJoueurs, infoJoueurs, P, 2)
-        upCardCroupier.append(infoJoueurs["Croupier"][2][1])
+        upCardCroupier.append(infoJoueurs["Croupier"][2][0])
         valUpCard = valeurMain(upCardCroupier)
         """ Deuxième phase de mise """
         phase = 2
@@ -247,6 +245,7 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie):
     return tour
 
 
+# Tests
 def test(N):
     n=0
     for i in range(1,N+1):
