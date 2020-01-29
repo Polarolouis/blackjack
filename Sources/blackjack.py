@@ -55,7 +55,7 @@ def endphase(LJ, J):
             elif vmain_croupier <= 21:
                 if vmain_croupier==vmain:
                     capital += mise
-                elif (vmain<vmain_croupier and vmain<=21):
+                elif (vmain>vmain_croupier and vmain<=21):
                     capital+= 2*mise
 
         # On vide main et mise
