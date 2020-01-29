@@ -246,6 +246,7 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie):
         for i in listeJoueurs:
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P, valUpCard)
+        print(infoJoueurs)
         endphase(listeJoueurs, infoJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
