@@ -25,7 +25,7 @@ def initialisation(n, strat): # Création de la liste des joueurs, et le diction
     J = {}
     for i in LJ:
         if i == 'Croupier':
-            J[i] = [0, stratBasique, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
+            J[i] = [0, stratCroupier, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
         else:
             J[i] = [0, strat, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
     return LJ,J
@@ -209,6 +209,16 @@ def stratBasique(phase, infosJoueurs, P, valUpCard):
     infosJoueurs[2] = main
     infosJoueurs[0] = mise
     infosJoueurs[4] = capital
+    infosJoueurs[3] = valeurMain(main)
+
+def stratCroupier(phase, infosJoueurs,P, valUpCard):
+    main = infosJoueurs[2]
+    if phase==2:
+        tirerUneCarte(P)
+        while valeurMain(main)<=17:
+            main.append(tirerUneCarte(P))
+
+    infosJoueurs[2] = main
     infosJoueurs[3] = valeurMain(main)
 
 def principale(nbreJoueurs, nbrePCartes, stratChoisie):
