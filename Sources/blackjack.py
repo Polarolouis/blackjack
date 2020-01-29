@@ -187,7 +187,7 @@ def stratBasique(phase, infosJoueurs, P, valUpCard):
     main = infosJoueurs[2]
 
     if phase == 1:  # Mise de départ
-        mise = 20 # Pour éviter que le joueur puisse ne plus miser
+        mise = (capital//20) + (capital//10) + (capital//5) + 1 # Pour éviter que le joueur puisse ne plus miser
         capital -= mise
     elif phase == 2:
         jouer = True
@@ -271,7 +271,7 @@ def test(N):
 def test2(N):
     s=0
     for i in range(N):
-        s+=principale(1, 100, stratBasique)
+        s+=principale(1, 1000, stratBasique)
     s=s/N
     return s
 
@@ -279,7 +279,7 @@ def test2(N):
 def test3(N):
     s=0
     for i in range(N):
-        s+=principale(1, 100, stratAlea)
+        s+=principale(1, 1000, stratAlea)
     s=s/N
     return s
 
