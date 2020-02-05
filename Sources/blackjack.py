@@ -13,6 +13,7 @@ Created on Wed Sep 25 14:59:25 2019
 @authors: Julien Morelle & Louis Lacoste
 """
 from random import randint
+from numpy import sqrt
 
 # Initialisation, Endphase et Banqueroute
 def initialisation(n, strat): # Création de la liste des joueurs, et le dictionnaire de leurs caractéristiques
@@ -221,7 +222,7 @@ def stratCroupier(phase, infosJoueurs,P, valUpCard):
     infosJoueurs[2] = main
     infosJoueurs[3] = valeurMain(main)
 
-def principale(nbreJoueurs, nbrePCartes, stratChoisie):
+def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
     tour = 0
     listeJoueurs, infoJoueurs = initialisation(nbreJoueurs, stratChoisie)
     P = melange(nbrePCartes)
@@ -246,44 +247,37 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie):
         for i in listeJoueurs:
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P, valUpCard)
-        print(infoJoueurs)
         endphase(listeJoueurs, infoJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
         upCardCroupier = []
-    return tour
+    if verbose:
+        print("Nombre de tours pour finir la partie : " + str(tour) + "\nNombre de cartes restantes dans le paquet : " + str(len(P)))
+        return tour
+    else:
+        return tour
 
 
 # Tests
-def test(N):
-    n=0
-    for i in range(1,N+1):
-        if i % 1000 == 0:
-            print("Essai n°" + str(i))
-        try:
-            principale(2,10,stratBasique)
-        except:
-            n+=1
-    return str(n/N*100) + " % d'erreurs"
-
-
-def test2(N):
-    s=0
+def compare(strat1, strat2, N):
+    T1=0
+    T2=0
+    V1=0
+    V2=0
+    R1=[]
+    R2=[]
     for i in range(N):
-        s+=principale(1, 1000, stratBasique)
-    s=s/N
-    return s
-
-
-def test3(N):
-    s=0
-    for i in range(N):
-        s+=principale(1, 1000, stratAlea)
-    s=s/N
-    return s
-
-
-def testc(N):
-    return (test2(N),test3(N))
+        R1.append(principale(1, 50, strat1))
+        T1+=R1[i]
+        R2.append(principale(1, 50, strat2))
+        T2+=R2[i]
+    T1 = T1 / N
+    T2 = T2 / N
+    for i in range(len(R1)):
+        V1 = (R1[i] - T1)**2
+        V2 = (R2[i] - T2)**2
+    V1 = sqrt(V1 / (N-1))
+    V2 = sqrt(V2 / (N-1))
+    return {strat1.__name__ : {'Moyenne' : T1, 'Ecart-type' : V1 } , strat2.__name__ : {'Moyenne' : T2, 'Ecart-type' : V2 }}
