@@ -5,3 +5,14 @@ Objectifs :
 	               - Rainman
 
 Pour la +1/-1 : - Déterminer une fonction de mise qui prend en argumant le compte des cartes sorties depuis le début de la partie
+
+
+Elements de réponses : On détermine un Running Count ou RC, qui fait la somme des +1 -1 ou 0 selon les cartes sorties, puis de ce RC on détermine un True Count ou TC en faisant :
+RC / (Nbre de Paquets restants), cela se traduit en python en : TC = RC / (len(P)//52 + 1); le TC étant calculé après chaque distribution, on ne rencontrera jamais le problème
+où le nombre de paquets est surestimé. Pour déterminer la mise on sait : -1 <= TC <= 1, cela nous donne : 
+si TC > 0, les cartes à venir sont à l'avantage du joueur
+si TC = 0, pas d'avantage
+si TC < 0, avantage au casino
+
+f(x) = 1 si -1 <= x <= 0
+       (c-1)^x si 0 <= x <= 1 
