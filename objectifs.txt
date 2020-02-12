@@ -1,0 +1,7 @@
+Objectifs : 
+
+- Mettre en place : 
+	- Stratégies : - +1/-1
+	               - Rainman
+
+Pour la +1/-1 : - Déterminer une fonction de mise qui prend en argumant le compte des cartes sorties depuis le début de la partie
