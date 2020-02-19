@@ -311,6 +311,19 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
 
 
 # Tests
+def stat(strat, N):
+    T=0
+    V=0
+    R=[]
+    for i in range(N):
+        R.append(principale(1, 50, strat))
+        T+=R[i]
+    T = T / N
+    for i in range(len(R)):
+        V = (R[i] - T)**2
+    V = sqrt(V / (N-1))
+    return {strat.__name__ : {'Moyenne' : T, 'Ecart-type' : V }}
+
 def compare(strat1, strat2, N):
     T1=0
     T2=0
