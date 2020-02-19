@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 15 14:31:17 2020
-
-@author: lordof20th
-"""
-
 # -*- coding: utf-8 -*-
 """
 Created on Wed Sep 25 14:59:25 2019
