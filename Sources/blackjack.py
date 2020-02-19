@@ -231,6 +231,9 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
     listeComplete = []
     while testJouable(listeJoueurs, infoJoueurs, P):
         tour += 1
+        if verbose:
+            print("Tour n° : " + str(tour))
+        
         phase = 0
         """ Première phase de mise """
         phase = 1
@@ -252,6 +255,8 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
             bankruptTest2(i, infoJoueurs, listeJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
+        if verbose:
+            print("Après avoir testé la banqueroute la partie est dans l'état suivant : " + str(infoJoueurs) + "\n")
         upCardCroupier = []
     if verbose:
         print("Nombre de tours pour finir la partie : " + str(tour) + "\nNombre de cartes restantes dans le paquet : " + str(len(P)))
