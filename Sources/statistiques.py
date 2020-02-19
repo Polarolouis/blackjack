@@ -6,5 +6,5 @@ Created on Wed Feb 19 18:58:13 2020
 @authors: Julien Morelle & Louis Lacoste
 """
 import blackjack as bj
-
-print(bj.stat(bj.stratHiLow, 10000))
+N = input("Saisir N le nombre de parties à itérer")
+print(bj.stat(bj.stratHiLow, N))
