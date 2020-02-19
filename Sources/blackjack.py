@@ -5,7 +5,7 @@ Created on Wed Sep 25 14:59:25 2019
 @authors: Julien Morelle & Louis Lacoste
 """
 from random import randint
-from numpy import sqrt
+from numpy import sqrt, floor
 
 # Initialisation, Endphase et Banqueroute
 def initialisation(n, strat): # Création de la liste des joueurs, et le dictionnaire de leurs caractéristiques
@@ -39,7 +39,7 @@ def endphase(LJ, J):
             capital = 200
         else:
             if vmain == 21 and len(main) == 2:
-                capital += int(3 * mise)
+                capital += int( 3* mise)
             elif vmain_croupier > 21:
                 if vmain <= 21:
                     capital += 2*mise
@@ -93,7 +93,6 @@ def testJouable(LJ, J, P):
         return False
 
 def distrib(LJ,J,P,n):  # LJ : Liste du nom index des joueurs | J : dictionnaire avec en index les { noms index des joueurs : [Main du joueur] }
-    global listeComplete
     for i in LJ:
         if i != "Croupier":
             for c in range(n):
@@ -106,9 +105,23 @@ def distrib(LJ,J,P,n):  # LJ : Liste du nom index des joueurs | J : dictionnaire
 
 def tirerUneCarte(P):
     carte = P.pop()
-    global listeComplete
-    listeComplete.append(carte)
+    calculRC(carte)
     return carte
+
+def calculRC(carte):
+    global RC
+    if (carte[0] == '2') or (carte[0] == '3') or (carte[0] == '4') or (carte[0] == '5') or (carte[0] == '6'):
+        RC += 1
+    elif (carte[0] == '1') or (carte[0] == 'J') or (carte[0] == 'Q') or (carte[0] == 'K') or (carte[0] == 'A'):
+        RC += -1
+    else:
+        RC += 0
+
+def setTC(P):
+    global RC
+    global TC
+    TC= RC/(len(P))
+
 
 
 def valeurMain(main):
@@ -204,6 +217,42 @@ def stratBasique(phase, infosJoueurs, P, valUpCard):
     infosJoueurs[4] = capital
     infosJoueurs[3] = valeurMain(main)
 
+def stratHiLow(phase, infosJoueurs, P, valUpCard):
+    # avec phase qui correspond à la phase de jeu
+    # On récupère les valeurs dont la carte du croupier (cartecroup)
+    cartecroup= valUpCard
+    capital = infosJoueurs[4]
+    mise = infosJoueurs[0]
+    main = infosJoueurs[2]
+    global TC
+    if phase == 1:  # Mise de départ
+        if TC>=0:
+            mise = int(floor((capital-1)**TC))
+        else:
+            mise = 1
+        capital -= mise
+    elif phase == 2:
+        jouer = True
+        while jouer == True :
+            if valeurMain(main) <=8 or (valeurMain(main) == 9 and (cartecroup>=7 or cartecroup==2)) or (valeurMain(main)==10 and cartecroup>=10) or (valeurMain(main)== 12 and (cartecroup==2 or cartecroup==3)) or ((valeurMain(main)>= 12 and valeurMain(main)<=16) and cartecroup>=7):
+                main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+                # il va hit
+            elif valeurMain(main) >= 17 or ((valeurMain(main)>= 13 and valeurMain(main) <= 16) and cartecroup <=6) or (valeurMain(main) == 12 and (cartecroup>=4 and cartecroup <=6)):
+                jouer = False
+                # il va stand
+            else:
+                main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+                capital -= mise
+                mise = 2*mise
+                jouer= False
+                # il va double
+
+    # On attribue les nouvelles valeurs
+    infosJoueurs[2] = main
+    infosJoueurs[0] = mise
+    infosJoueurs[4] = capital
+    infosJoueurs[3] = valeurMain(main)
+
 def stratCroupier(phase, infosJoueurs,P, valUpCard):
     main = infosJoueurs[2]
     if phase==2:
@@ -219,13 +268,14 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
     listeJoueurs, infoJoueurs = initialisation(nbreJoueurs, stratChoisie)
     P = melange(nbrePCartes)
     upCardCroupier = []
-    global listeComplete
-    listeComplete = []
+    global RC
+    RC = 0
+    global TC
+    TC = 0
     while testJouable(listeJoueurs, infoJoueurs, P):
         tour += 1
         if verbose:
             print("Tour n° : " + str(tour))
-        
         phase = 0
         """ Première phase de mise """
         phase = 1
@@ -242,13 +292,16 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
         for i in listeJoueurs:
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P, valUpCard)
+        setTC(P)  # On actualise le True Count
+        if verbose:
+            print("L'état du jeu est : "+str(infoJoueurs)+"\n")
         endphase(listeJoueurs, infoJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
         for i in listeJoueurs:
             bankruptTest2(i, infoJoueurs, listeJoueurs)
         if verbose:
-            print("Après avoir testé la banqueroute la partie est dans l'état suivant : " + str(infoJoueurs) + "\n")
+            print("Après avoir testé la banqueroute la partie est dans l'état suivant : " + str(infoJoueurs) +"\n Le True Count est de : " + str(TC) + "\n")
         upCardCroupier = []
     if verbose:
         print("Nombre de tours pour finir la partie : " + str(tour) + "\nNombre de cartes restantes dans le paquet : " + str(len(P)))
