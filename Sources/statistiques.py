@@ -7,4 +7,4 @@ Created on Wed Feb 19 18:58:13 2020
 """
 import blackjack as bj
 N = input("Saisir N le nombre de parties à itérer")
-print(bj.stat(bj.stratHiLow, N))
+print("Pour "+ str(N) +" parties : " + bj.stat(bj.stratHiLow, N))
