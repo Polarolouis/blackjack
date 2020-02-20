@@ -63,7 +63,7 @@ def endphase(LJ, J):
         infosJoueurs[3] = vmain
 
 
-def bankruptTest2(nom, J, LJ):
+def testBanqueroute(nom, J, LJ):
     if J[nom][4] <= 2:
         # Le joueur ne peut plus jouer, il faut le retirer des listes
         del J[nom]  # On supprime ses données
@@ -297,9 +297,9 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
             print("L'état du jeu est : "+str(infoJoueurs)+"\n")
         endphase(listeJoueurs, infoJoueurs)
         for i in listeJoueurs:
-            bankruptTest2(i, infoJoueurs, listeJoueurs)
+            testBanqueroute(i, infoJoueurs, listeJoueurs)
         for i in listeJoueurs:
-            bankruptTest2(i, infoJoueurs, listeJoueurs)
+            testBanqueroute(i, infoJoueurs, listeJoueurs)
         if verbose:
             print("Après avoir testé la banqueroute la partie est dans l'état suivant : " + str(infoJoueurs) +"\n Le True Count est de : " + str(TC) + "\n")
         upCardCroupier = []
