@@ -322,7 +322,7 @@ def stratJoueur(phase, infosJoueurs, P, valUpCard):
     if phase == 1:  # Mise de départ
         print("Votre capital est de : " + str(capital))
         miseEnCours = True
-        while miseEnCours:    
+        while miseEnCours:
             mise = input("Veuillez saisir votre mise entre 1 et " + str(capital) + " jetons : ")
             try:
                 mise = int(mise)
@@ -354,48 +354,52 @@ def stratJoueur(phase, infosJoueurs, P, valUpCard):
             elif choix == 2: # Hit
                 main.append(tirerUneCarte(P)) # On ajoute une carte à la main
                 afficheJeu()
-                rejouer = True
+                rejouer = True # On rentre dans la boucle de choix
                 choix2EnCours = True
                 while valeurMain(main) <= 21 and rejouer:
                     print("Après ce choix que souhaitez-vous faire ?")
                     afficheJeu()
                     while choix2EnCours:
-                        choix2 = input("Souhaitez-vous : \n 1)Hit (Tirer une carte supplémentaire) \n 2)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
+                        choix2EnCours = True
+                        choix2 = input("Souhaitez-vous : \n 2)Hit (Tirer une carte supplémentaire) \n 3)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
                         try:
                             choix2 = int(choix2)
                         except:
                             print("Choix non entier ! ")
-                        if (type(choix2) is int) and (choix2 == 1 or choix2 == 2):
+                        if (type(choix2) is int) and (choix2 == 2 or choix2 == 3):
                             choix2EnCours = False
                         else:
                             print("Saisie incorrecte ! Veuillez recommencer")
-                    if choix2 == 1:    
-                        rejouer = True
-                        main.append(tirerUneCarte(P)) # On ajoute une carte à la main
                     rejouer = False
+                    if choix2 == 2:
+                        rejouer = True # On re-rentre dans la boucle de jeu
+                        choix2EnCours = True # On re-rentre dans la boucle de choix
+                        main.append(tirerUneCarte(P)) # On ajoute une carte à la main
                     afficheJeu()
 
         else: # On ne peut pas doubler
-            afficheJeu()
             rejouer = True
             choix2EnCours = True
             while valeurMain(main) <= 21 and rejouer:
                 afficheJeu()
                 while choix2EnCours:
-                    choix2 = input("Souhaitez-vous : \n 1)Hit (Tirer une carte supplémentaire) \n 2)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
+                    choix2EnCours = True
+                    choix2 = input("Souhaitez-vous : \n 2)Hit (Tirer une carte supplémentaire) \n 3)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
                     try:
-                        choix2 = int(choix)
+                        choix2 = int(choix2)
                     except:
                         print("Choix non entier ! ")
-                    if (type(choix2) is int) and (choix2 >= 1 and choix2 <= 2):
+                    if (type(choix2) is int) and (choix2 == 2 or choix2 == 3):
                         choix2EnCours = False
                     else:
                         print("Saisie incorrecte ! Veuillez recommencer")
-                if choix2 == 1:    
-                    rejouer = True
+                rejouer = False
+                if choix2 == 2:
+                    rejouer = True # On re-rentre dans la boucle de jeu
+                    choix2EnCours = True # On re-rentre dans la boucle de choix
                     main.append(tirerUneCarte(P)) # On ajoute une carte à la main
-                    afficheJeu()
-            
+                afficheJeu()
+
     # On attribue les nouvelles valeurs
     infosJoueurs[2] = main
     infosJoueurs[0] = mise
@@ -423,7 +427,7 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False, humain=Fal
     TC = 0
     while testJouable(listeJoueurs, infoJoueurs, P):
         tour += 1
-        
+
         if verbose or humain:
             print("Tour n° : " + str(tour))
         phase = 0
