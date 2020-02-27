@@ -7,8 +7,12 @@ Created on Wed Sep 25 14:59:25 2019
 from random import randint
 from numpy import sqrt, floor
 
+#Color assignation
+MAGENTA = '\033[35m'   # mode 31 = red forground
+RESET = '\033[0m'  # mode 0  = reset
+
 # Initialisation, Endphase et Banqueroute
-def initialisation(n, strat): # Création de la liste des joueurs, et le dictionnaire de leurs caractéristiques
+def initialisation(n, strat, humain=False): # Création de la liste des joueurs, et le dictionnaire de leurs caractéristiques
     LJ=[]
     for i in range(n+1):
         if i == n:
@@ -344,3 +348,6 @@ def compare(strat1, strat2, N):
     V1 = sqrt(V1 / (N-1))
     V2 = sqrt(V2 / (N-1))
     return {strat1.__name__ : {'Moyenne' : T1, 'Ecart-type' : V1 } , strat2.__name__ : {'Moyenne' : T2, 'Ecart-type' : V2 }}
+
+
+# Affichage :
