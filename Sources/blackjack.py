@@ -14,17 +14,34 @@ RESET = '\033[0m'  # mode 0  = reset
 # Initialisation, Endphase et Banqueroute
 def initialisation(n, strat, humain=False): # Création de la liste des joueurs, et le dictionnaire de leurs caractéristiques
     LJ=[]
-    for i in range(n+1):
-        if i == n:
-            LJ.append("Croupier")
-        else:
-            LJ.append("Joueur "+str(i+1))
-    J = {}
-    for i in LJ:
-        if i == 'Croupier':
-            J[i] = [0, stratCroupier, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
-        else:
-            J[i] = [0, strat, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
+    if humain:
+        for i in range(n+1):
+            if i == n:
+                LJ.append("Croupier")
+            elif i == n-1:
+                LJ.append("Vous")
+            else:
+                LJ.append("Joueur "+str(i+1))
+        J = {}
+        for i in LJ:
+            if i == 'Croupier':
+                J[i] = [0, stratCroupier, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
+            elif i == 'Vous':
+                J[i] = [0, stratJoueur, [], 0, 200]
+            else:
+                J[i] = [0, strat, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
+    else:
+        for i in range(n+1):
+            if i == n:
+                LJ.append("Croupier")
+            else:
+                LJ.append("Joueur "+str(i+1))
+            J = {}
+            for i in LJ:
+                if i == 'Croupier':
+                    J[i] = [0, stratCroupier, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
+                else:
+                    J[i] = [0, strat, [], 0, 200]  # [mise, stratégie, main, valeur main, capital]
     return LJ,J
 
 
@@ -143,6 +160,33 @@ def valeurMain(main):
         S -= 10
         count -= 1
     return S
+
+def convCarteSymbole(main):
+    mainSymboles=[]
+    for i in main:
+        if len(i) == 2:
+            if i[1] == 'H':
+                carteSymbole = '♥️'
+            elif i[1] == 'D':
+                carteSymbole = '♦️'
+            elif i[1] == 'S':
+                carteSymbole = '♠️'
+            else:
+                carteSymbole = '♣️'
+            carteSymbole = i[0] + carteSymbole
+            mainSymboles.append(carteSymbole)
+        elif len(i) == 3:
+            if i[2] == 'H':
+                carteSymbole = '♥️'
+            elif i[2] == 'D':
+                carteSymbole = '♦️'
+            elif i[2] == 'S':
+                carteSymbole = '♠️'
+            else:
+                carteSymbole = '♣️'
+            carteSymbole = i[0] + i[1] + carteSymbole
+            mainSymboles.append(carteSymbole)
+    return str(mainSymboles)
 
 
 # Stratégies
@@ -267,9 +311,110 @@ def stratCroupier(phase, infosJoueurs,P, valUpCard):
     infosJoueurs[2] = main
     infosJoueurs[3] = valeurMain(main)
 
-def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
+
+def stratJoueur(phase, infosJoueurs, P, valUpCard):
+    # avec phase qui correspond à la phase de jeu
+    # On récupère les valeurs
+    capital = infosJoueurs[4]
+    mise = infosJoueurs[0]
+    main = infosJoueurs[2]
+
+    if phase == 1:  # Mise de départ
+        print("Votre capital est de : " + str(capital))
+        miseEnCours = True
+        while miseEnCours:    
+            mise = input("Veuillez saisir votre mise entre 1 et " + str(capital) + " jetons : ")
+            try:
+                mise = int(mise)
+            except:
+                print("Mise non entière ! ")
+            if (type(mise) is int) and (mise >= 1 and mise <= capital):
+                miseEnCours = False
+            else:
+                print("Saisie incorrecte ! Veuillez recommencer")
+        capital -= mise
+    elif phase == 2:
+        afficheJeu()
+        if capital >= mise: # On peut Hit Stand et Double
+            choixEnCours = True
+            while choixEnCours:
+                choix = input("Souhaitez-vous : \n 1)Double (Doubler la mise et tirer une carte puis passer à la révélation) \n 2)Hit (Tirer une carte supplémentaire) \n 3)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
+                try:
+                    choix = int(choix)
+                except:
+                    print("Choix non entier ! ")
+                if (type(choix) is int) and (choix >= 1 and choix <= 3):
+                    choixEnCours = False
+                else:
+                    print("Saisie incorrecte ! Veuillez recommencer")
+            if choix == 1:  # Double
+                main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+                capital -= mise
+                mise = 2*mise
+            elif choix == 2: # Hit
+                main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+                afficheJeu()
+                rejouer = True
+                choix2EnCours = True
+                while valeurMain(main) <= 21 and rejouer:
+                    print("Après ce choix que souhaitez-vous faire ?")
+                    afficheJeu()
+                    while choix2EnCours:
+                        choix2 = input("Souhaitez-vous : \n 1)Hit (Tirer une carte supplémentaire) \n 2)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
+                        try:
+                            choix2 = int(choix2)
+                        except:
+                            print("Choix non entier ! ")
+                        if (type(choix2) is int) and (choix2 == 1 or choix2 == 2):
+                            choix2EnCours = False
+                        else:
+                            print("Saisie incorrecte ! Veuillez recommencer")
+                    if choix2 == 1:    
+                        rejouer = True
+                        main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+                    rejouer = False
+                    afficheJeu()
+
+        else: # On ne peut pas doubler
+            afficheJeu()
+            rejouer = True
+            choix2EnCours = True
+            while valeurMain(main) <= 21 and rejouer:
+                afficheJeu()
+                while choix2EnCours:
+                    choix2 = input("Souhaitez-vous : \n 1)Hit (Tirer une carte supplémentaire) \n 2)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
+                    try:
+                        choix2 = int(choix)
+                    except:
+                        print("Choix non entier ! ")
+                    if (type(choix2) is int) and (choix2 >= 1 and choix2 <= 2):
+                        choix2EnCours = False
+                    else:
+                        print("Saisie incorrecte ! Veuillez recommencer")
+                if choix2 == 1:    
+                    rejouer = True
+                    main.append(tirerUneCarte(P)) # On ajoute une carte à la main
+                    afficheJeu()
+            
+    # On attribue les nouvelles valeurs
+    infosJoueurs[2] = main
+    infosJoueurs[0] = mise
+    infosJoueurs[4] = capital
+    infosJoueurs[3] = valeurMain(main)
+
+
+#Affichage
+def afficheJeu():
+    global infoJoueurs
+    global listeJoueurs
+    for i in listeJoueurs:
+        print(i + convCarteSymbole(infoJoueurs[i][2])+"\n")
+
+def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False, humain=False):
     tour = 0
-    listeJoueurs, infoJoueurs = initialisation(nbreJoueurs, stratChoisie)
+    global listeJoueurs
+    global infoJoueurs
+    listeJoueurs, infoJoueurs = initialisation(nbreJoueurs, stratChoisie, humain)
     P = melange(nbrePCartes)
     upCardCroupier = []
     global RC
@@ -278,7 +423,8 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
     TC = 0
     while testJouable(listeJoueurs, infoJoueurs, P):
         tour += 1
-        if verbose:
+        
+        if verbose or humain:
             print("Tour n° : " + str(tour))
         phase = 0
         """ Première phase de mise """
@@ -299,6 +445,8 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False):
         setTC(P)  # On actualise le True Count
         if verbose:
             print("L'état du jeu est : "+str(infoJoueurs)+"\n")
+        if humain:
+            afficheJeu()
         endphase(listeJoueurs, infoJoueurs)
         for i in listeJoueurs:
             testBanqueroute(i, infoJoueurs, listeJoueurs)
