@@ -10,6 +10,8 @@ from numpy import sqrt, floor
 #Color assignation
 MAGENTA = '\033[35m'   # mode 31 = red forground
 RESET = '\033[0m'  # mode 0  = reset
+RED = '\033[31m'
+BLACK = '\033[30m'
 
 # Initialisation, Endphase et Banqueroute
 def initialisation(n, strat, humain=False): # Création de la liste des joueurs, et le dictionnaire de leurs caractéristiques
@@ -122,8 +124,6 @@ def distrib(LJ,J,P,n):  # LJ : Liste du nom index des joueurs | J : dictionnaire
             for c in range(n-1):
                 J[i][2].append(tirerUneCarte(P)) # On ajoute une carte dans la liste de carte du croupier
 
-
-
 def tirerUneCarte(P):
     carte = P.pop()
     calculRC(carte)
@@ -142,8 +142,6 @@ def setTC(P):
     global RC
     global TC
     TC= RC/(len(P))
-
-
 
 def valeurMain(main):
     S = 0
@@ -311,7 +309,6 @@ def stratCroupier(phase, infosJoueurs,P, valUpCard):
     infosJoueurs[2] = main
     infosJoueurs[3] = valeurMain(main)
 
-
 def stratJoueur(phase, infosJoueurs, P, valUpCard):
     # avec phase qui correspond à la phase de jeu
     # On récupère les valeurs
@@ -320,33 +317,33 @@ def stratJoueur(phase, infosJoueurs, P, valUpCard):
     main = infosJoueurs[2]
 
     if phase == 1:  # Mise de départ
-        print("Votre capital est de : " + str(capital))
+        print("Votre capital est de : " + str(capital) + " jetons")
         miseEnCours = True
         while miseEnCours:
-            mise = input("Veuillez saisir votre mise entre 1 et " + str(capital) + " jetons : ")
+            mise = input(MAGENTA + "Veuillez saisir votre mise entre 1 et " + str(capital) + " jetons : " + RESET)
             try:
                 mise = int(mise)
             except:
-                print("Mise non entière ! ")
+                print(RED + "Mise non entière ! " + RESET)
             if (type(mise) is int) and (mise >= 1 and mise <= capital):
                 miseEnCours = False
             else:
-                print("Saisie incorrecte ! Veuillez recommencer")
+                print(RED + "Saisie incorrecte ! Veuillez recommencer" + RESET)
         capital -= mise
     elif phase == 2:
         afficheJeu()
         if capital >= mise: # On peut Hit Stand et Double
             choixEnCours = True
             while choixEnCours:
-                choix = input("Souhaitez-vous : \n 1)Double (Doubler la mise et tirer une carte puis passer à la révélation) \n 2)Hit (Tirer une carte supplémentaire) \n 3)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
+                choix = input("Souhaitez-vous : \n 1)Double (Doubler la mise et tirer une carte puis passer à la révélation) \n 2)Hit (Tirer une carte supplémentaire) \n 3)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n" + MAGENTA + " Entrer le numéro de votre choix : " + RESET)
                 try:
                     choix = int(choix)
                 except:
-                    print("Choix non entier ! ")
+                    print(RED + "Choix non entier ! " + RESET)
                 if (type(choix) is int) and (choix >= 1 and choix <= 3):
                     choixEnCours = False
                 else:
-                    print("Saisie incorrecte ! Veuillez recommencer")
+                    print(RED + "Saisie incorrecte ! Veuillez recommencer" + RESET)
             if choix == 1:  # Double
                 main.append(tirerUneCarte(P)) # On ajoute une carte à la main
                 capital -= mise
@@ -361,15 +358,15 @@ def stratJoueur(phase, infosJoueurs, P, valUpCard):
                     afficheJeu()
                     while choix2EnCours:
                         choix2EnCours = True
-                        choix2 = input("Souhaitez-vous : \n 2)Hit (Tirer une carte supplémentaire) \n 3)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n Entrer le numéro de votre choix : ")
+                        choix2 = input("Souhaitez-vous : \n 2)Hit (Tirer une carte supplémentaire) \n 3)Stand (ne pas tirer de cartes ni augmenter la mise et passer à la révélation) \n " + MAGENTA + "Entrer le numéro de votre choix : " + RESET)
                         try:
                             choix2 = int(choix2)
                         except:
-                            print("Choix non entier ! ")
+                            print(RED + "Choix non entier ! " + RESET)
                         if (type(choix2) is int) and (choix2 == 2 or choix2 == 3):
                             choix2EnCours = False
                         else:
-                            print("Saisie incorrecte ! Veuillez recommencer")
+                            print(RED + "Saisie incorrecte ! Veuillez recommencer" + RESET)
                     rejouer = False
                     if choix2 == 2:
                         rejouer = True # On re-rentre dans la boucle de jeu
@@ -429,11 +426,11 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False, humain=Fal
         tour += 1
 
         if verbose or humain:
-            print("Tour n° : " + str(tour))
+            print(BLACK + "------------------------------\n         Tour n° : " + str(tour) + "\n------------------------------\n" + RESET)
         phase = 0
         """ Première phase de mise """
         phase = 1
-        for i in listeJoueurs:
+        for i in listeJoueurs: 
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P, 0)
 
