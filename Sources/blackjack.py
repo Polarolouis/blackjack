@@ -91,7 +91,16 @@ def testBanqueroute(nom, J, LJ):
         # Le joueur ne peut plus jouer, il faut le retirer des listes
         del J[nom]  # On supprime ses données
         LJ.remove(nom)  # On le retire de la liste des joueurs
+        
 
+def quitterLaTable(quitter):
+    global listeJoueurs
+    global infoJoueurs
+    if quitter == True:
+        indiceJoueur = len(listeJoueurs) - 2
+        nom = listeJoueurs[indiceJoueur]
+        del infoJoueurs[nom]  # On supprime ses données
+        listeJoueurs.remove(nom)  # On le retire de la liste des joueurs        
 
 #Mélange
 def melange(n):
@@ -318,7 +327,20 @@ def stratJoueur(phase, infosJoueurs, P, valUpCard):
 
     if phase == 1:  # Mise de départ
         print("Votre capital est de : " + str(capital) + " jetons")
+        continuerLaPartieChoixEnCours = True
+        while continuerLaPartieChoixEnCours:
+            continuer = input("Souhaitez-vous continuer la partie ? (O/N) : ")
+            try:
+                continuer = str(continuer)
+            except:
+                print(RED + "Saisie incorrecte ! Veuillez recommencer" + RESET)
+            if (type(continuer) is str) and (continuer[0] == 'O' or continuer[0] == 'o' or continuer[0] == 'N' or continuer[0] == 'n'):
+                continuerLaPartieChoixEnCours = False
+        print(continuer)
         miseEnCours = True
+        if continuer[0] == 'n' or continuer[0] == 'N':
+            miseEnCours = False # Si on veut quitter la partie on ne mise pas
+            quitterLaTable(True)
         while miseEnCours:
             mise = input(MAGENTA + "Veuillez saisir votre mise entre 1 et " + str(capital) + " jetons : " + RESET)
             try:
@@ -330,6 +352,9 @@ def stratJoueur(phase, infosJoueurs, P, valUpCard):
             else:
                 print(RED + "Saisie incorrecte ! Veuillez recommencer" + RESET)
         capital -= mise
+        if continuer[0] == 'n' or continuer[0] == 'N':
+            print("Vous avez gagné : " + str(capital) + " jetons.")
+            capital == 0
     elif phase == 2:
         afficheJeu()
         if capital >= mise: # On peut Hit Stand et Double
@@ -430,6 +455,8 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False, humain=Fal
         phase = 0
         """ Première phase de mise """
         phase = 1
+        if verbose or humain:
+            print(BLACK + "-----\n Les joueurs font leurs jeux\n-----" + RESET)
         for i in listeJoueurs: 
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P, 0)
@@ -440,6 +467,8 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False, humain=Fal
         valUpCard = valeurMain(upCardCroupier)
         """ Deuxième phase de mise """
         phase = 2
+        if verbose or humain:
+            print(BLACK + "-----\n Les joueurs tirent ou non des cartes supplémentaires\n-----" + RESET)
         for i in listeJoueurs:
             strat = infoJoueurs[i][1]
             strat(phase, infoJoueurs[i], P, valUpCard)
@@ -447,6 +476,7 @@ def principale(nbreJoueurs, nbrePCartes, stratChoisie, verbose=False, humain=Fal
         if verbose:
             print("L'état du jeu est : "+str(infoJoueurs)+"\n")
         if humain:
+            print("A la fin de cette phase, la partie est dans cette état :")
             afficheJeu()
         endphase(listeJoueurs, infoJoueurs)
         for i in listeJoueurs:
